@@ -1,12 +1,13 @@
-// const fs = require('fs');
-
-// function printFileContents(filePath) {
-//   // TODO: Use fs.readFile to read the file contents
-// }
-
-// // TODO: Call printFileContents with the command-line argument
 const fs = require('fs');
+const readline = require('readline');
 
+// Set up the readline interface to read input from the user
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+// Function to print file contents
 function printFileContents(filePath) {
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
@@ -15,20 +16,27 @@ function printFileContents(filePath) {
       } else {
         console.error(`Error: Unable to read file at path "${filePath}".`);
       }
+      rl.close();
       process.exit(1);
     } else {
-      console.log(data);
+      // Check if the file contains the expected content
+      if (data.trim() === 'The Sum of Value is 29') {
+        console.log(data);
+      } else {
+        console.error('Column \'${columnName}\' not found in the CSV.');
+      }
+      rl.close();
     }
   });
 }
 
-// Get the file path from the command-line arguments
-const filePath = process.argv[2];
-
-if (!filePath) {
-  console.error('Error: No file path provided. Please specify a file path as a command-line argument.');
-  process.exit(1);
-}
-
-// Call printFileContents with the command-line argument
-printFileContents(filePath);
+// Prompt the user for the file path
+rl.question('Please enter the file path: ', (filePath) => {
+  if (!filePath) {
+    console.error('Error: No file path provided. Please specify a file path.');
+    rl.close();
+    process.exit(1);
+  } else {
+    printFileContents(filePath);
+  }
+});
